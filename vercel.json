@@ -1,0 +1,15 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "rewrites": [
+    {
+      "source": "/",
+      "destination": "/static/index.html"
+    }
+  ],
+  "functions": {
+    "api/*.py": {
+      "maxDuration": 60,
+      "excludeFiles": "{.env,data/**,__pycache__/**,Dockerfile,.dockerignore,start_lesson_journal.bat,publish_to_github.bat}"
+    }
+  }
+}

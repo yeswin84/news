@@ -12,21 +12,20 @@ from http import HTTPStatus
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from typing import Any
-from urllib.parse import urlparse
+from urllib.parse import parse_qs, urlparse
 
 from .ai import AIProcessingError, create_lesson_outputs, enrich_lesson_record
 from .config import (
+    BLOB_READ_WRITE_TOKEN,
     HOST,
     LESSON_DB_PATH,
     LESSON_JOURNAL_BASIC_AUTH_PASSWORD,
     LESSON_JOURNAL_BASIC_AUTH_USER,
     OPENAI_API_KEY,
     PORT,
-    ROOT_DIR,
     STATIC_DIR,
-    UPLOAD_DIR,
 )
-from .storage import create_lesson, ensure_storage, get_lesson, list_lessons, update_lesson
+from .storage import create_lesson, ensure_storage, get_lesson, list_lessons, persist_audio_files, update_lesson
 
 
 class LessonJournalHandler(BaseHTTPRequestHandler):
@@ -35,6 +34,7 @@ class LessonJournalHandler(BaseHTTPRequestHandler):
     def do_GET(self) -> None:
         parsed = urlparse(self.path)
         path = parsed.path
+        query = parse_qs(parsed.query)
 
         if path == "/healthz":
             self.send_json({"ok": True})
@@ -51,6 +51,7 @@ class LessonJournalHandler(BaseHTTPRequestHandler):
             self.send_json(
                 {
                     "has_api_key": bool(OPENAI_API_KEY),
+                    "storage_backend": "vercel_blob" if BLOB_READ_WRITE_TOKEN else "local_file",
                     "data_file": str(LESSON_DB_PATH),
                 }
             )
@@ -58,6 +59,17 @@ class LessonJournalHandler(BaseHTTPRequestHandler):
         if path == "/api/lessons":
             lessons = [self.serialize_lesson_for_list(enrich_lesson_record(item)) for item in list_lessons()]
             self.send_json({"lessons": lessons})
+            return
+        if path == "/api/lesson":
+            lesson_id = first_query_value(query, "id")
+            if not lesson_id:
+                self.send_error_json(HTTPStatus.BAD_REQUEST, "기록 id가 필요합니다.")
+                return
+            lesson = get_lesson(lesson_id)
+            if lesson is None:
+                self.send_error_json(HTTPStatus.NOT_FOUND, "기록을 찾지 못했습니다.")
+                return
+            self.send_json({"lesson": enrich_lesson_record(lesson)})
             return
         if path.startswith("/api/lessons/"):
             lesson_id = path.removeprefix("/api/lessons/")
@@ -73,11 +85,19 @@ class LessonJournalHandler(BaseHTTPRequestHandler):
     def do_POST(self) -> None:
         parsed = urlparse(self.path)
         path = parsed.path
+        query = parse_qs(parsed.query)
 
         if not self.ensure_authenticated():
             return
         if path == "/api/lessons":
             self.handle_create_lesson()
+            return
+        if path == "/api/regenerate":
+            lesson_id = first_query_value(query, "id")
+            if not lesson_id:
+                self.send_error_json(HTTPStatus.BAD_REQUEST, "기록 id가 필요합니다.")
+                return
+            self.handle_regenerate_lesson(lesson_id)
             return
         if path.startswith("/api/lessons/") and path.endswith("/regenerate"):
             lesson_id = path.split("/")[3]
@@ -89,8 +109,16 @@ class LessonJournalHandler(BaseHTTPRequestHandler):
     def do_PUT(self) -> None:
         parsed = urlparse(self.path)
         path = parsed.path
+        query = parse_qs(parsed.query)
 
         if not self.ensure_authenticated():
+            return
+        if path == "/api/lesson":
+            lesson_id = first_query_value(query, "id")
+            if not lesson_id:
+                self.send_error_json(HTTPStatus.BAD_REQUEST, "기록 id가 필요합니다.")
+                return
+            self.handle_update_lesson(lesson_id)
             return
         if path.startswith("/api/lessons/"):
             lesson_id = path.removeprefix("/api/lessons/")
@@ -164,36 +192,24 @@ class LessonJournalHandler(BaseHTTPRequestHandler):
             )
             return
 
-        saved_files: list[Path] = []
-        original_filenames: list[str] = []
+        original_filenames = [file_info.get("filename", "") for file_info in audio_files]
 
         try:
-            for file_info in audio_files:
-                original_filenames.append(file_info["filename"])
-                saved_files.append(self.save_uploaded_file(file_info))
-
             generated = create_lesson_outputs(
                 lesson_date=lesson_date,
                 article_title=article_title,
                 note=note,
                 tone_samples=tone_samples,
                 manual_transcript=manual_transcript,
-                audio_paths=saved_files,
+                audio_inputs=audio_files,
             )
         except AIProcessingError as exc:
-            self.cleanup_files(saved_files)
             self.send_error_json(HTTPStatus.BAD_REQUEST, str(exc))
             return
 
         lesson_id = uuid.uuid4().hex[:12]
         now = utc_now()
-        stored_audio_paths: list[str] = []
-
-        if saved_files:
-            if keep_audio:
-                stored_audio_paths = [str(path.relative_to(ROOT_DIR)) for path in saved_files]
-            else:
-                self.cleanup_files(saved_files)
+        stored_audio_paths = persist_audio_files(audio_files) if keep_audio else []
 
         lesson = enrich_lesson_record(
             {
@@ -237,7 +253,7 @@ class LessonJournalHandler(BaseHTTPRequestHandler):
                 note=lesson.get("note", ""),
                 tone_samples=lesson.get("tone_samples", []),
                 manual_transcript=lesson.get("transcript_text", ""),
-                audio_paths=[],
+                audio_inputs=[],
             )
         except AIProcessingError as exc:
             self.send_error_json(HTTPStatus.BAD_REQUEST, str(exc))
@@ -326,16 +342,6 @@ class LessonJournalHandler(BaseHTTPRequestHandler):
 
         return form, files
 
-    def save_uploaded_file(self, file_info: dict[str, Any]) -> Path:
-        suffix = Path(file_info["filename"]).suffix or guess_suffix(file_info.get("content_type") or "")
-        destination = UPLOAD_DIR / f"{uuid.uuid4().hex}{suffix}"
-        destination.write_bytes(file_info["content"])
-        return destination
-
-    def cleanup_files(self, files: list[Path]) -> None:
-        for file_path in files:
-            file_path.unlink(missing_ok=True)
-
     def serialize_lesson_for_list(self, lesson: dict[str, Any]) -> dict[str, Any]:
         return {
             "id": lesson.get("id"),
@@ -382,12 +388,13 @@ def parse_checkbox(value: str) -> bool:
     return value.lower() in {"1", "true", "on", "yes"}
 
 
-def guess_suffix(content_type: str) -> str:
-    return mimetypes.guess_extension(content_type) or ".bin"
-
-
 def utc_now() -> str:
     return datetime.utcnow().replace(microsecond=0).isoformat() + "Z"
+
+
+def first_query_value(query: dict[str, list[str]], key: str) -> str:
+    values = query.get(key) or []
+    return values[0].strip() if values else ""
 
 
 def run() -> None:

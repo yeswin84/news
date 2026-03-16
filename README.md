@@ -2,34 +2,24 @@
 
 수업 음성 파일을 올리면 전사, 요약, 학생 버전 기록, 보호자 기록을 한 번에 만드는 개인용 웹앱입니다.
 
-## 지금 가장 쉬운 실행 방법
+## 로컬 실행
 
-1. [start_lesson_journal.bat](C:/Users/sk012/Projects/lesson_journal_app/start_lesson_journal.bat)을 더블클릭합니다.
-2. 잠시 후 브라우저에서 [http://127.0.0.1:8000](http://127.0.0.1:8000) 이 열립니다.
-3. 창은 닫지 말고 그대로 두면 서버가 계속 켜져 있습니다.
+1. [.env](C:/Users/sk012/Projects/lesson_journal_app/.env) 파일에 `OPENAI_API_KEY`를 넣습니다.
+2. [start_lesson_journal.bat](C:/Users/sk012/Projects/lesson_journal_app/start_lesson_journal.bat)을 더블클릭합니다.
+3. 브라우저에서 [http://127.0.0.1:8000](http://127.0.0.1:8000) 을 엽니다.
 
-## OpenAI API 키 넣는 방법
+## Vercel 배포
 
-1. [.env](C:/Users/sk012/Projects/lesson_journal_app/.env) 파일을 엽니다.
-2. 아래 줄의 오른쪽에 실제 키를 넣습니다.
+이 프로젝트는 Vercel 기준으로도 동작하도록 수정되어 있습니다.
 
-```text
-OPENAI_API_KEY=
-```
+필수 환경변수:
 
-예시:
+- `OPENAI_API_KEY`
+- `BLOB_READ_WRITE_TOKEN`
+- `LESSON_JOURNAL_BASIC_AUTH_USER`
+- `LESSON_JOURNAL_BASIC_AUTH_PASSWORD`
 
-```text
-OPENAI_API_KEY=sk-proj-xxxxxxxx
-```
-
-저장 후 앱을 다시 실행하면 음성 자동 전사를 사용할 수 있습니다.
-
-## API 키가 없을 때
-
-- 앱은 그대로 실행됩니다.
-- 음성 자동 전사는 되지 않습니다.
-- `추가 입력 열기` 안에 전사문을 직접 붙여 넣으면 기록을 만들 수 있습니다.
+자세한 내용은 [DEPLOY.md](C:/Users/sk012/Projects/lesson_journal_app/DEPLOY.md)를 보면 됩니다.
 
 ## 추천 사용 순서
 
@@ -40,5 +30,5 @@ OPENAI_API_KEY=sk-proj-xxxxxxxx
 
 ## 참고
 
-- `.env` 파일은 Git에 올라가지 않도록 설정해두었습니다.
-- 예전에 노출된 API 키가 있다면 그 키는 폐기하고 새 키를 쓰는 것이 안전합니다.
+- `.env` 파일은 Git에 올라가지 않도록 설정되어 있습니다.
+- 실제 수업 기록과 업로드 파일도 Git에 올라가지 않도록 제외되어 있습니다.

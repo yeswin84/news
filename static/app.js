@@ -158,7 +158,7 @@ function renderLessonList() {
 }
 
 async function selectLesson(lessonId) {
-  const payload = await requestJson(`/api/lessons/${lessonId}`);
+  const payload = await requestJson(`/api/lesson?id=${encodeURIComponent(lessonId)}`);
   state.selectedLesson = normalizeLesson(payload.lesson);
   renderLessonList();
   renderDetail();
@@ -567,7 +567,7 @@ async function onSaveLesson() {
   showLoading("수정 내용을 저장하고 있어요.", "수정한 제목과 요약, 학생 버전, 보호자 기록을 저장합니다.");
 
   try {
-    const payload = await requestJson(`/api/lessons/${state.selectedLesson.id}`, {
+    const payload = await requestJson(`/api/lesson?id=${encodeURIComponent(state.selectedLesson.id)}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -597,7 +597,7 @@ async function onRegenerateLesson() {
   showLoading("기록물을 다시 만들고 있어요.", "저장된 전사문을 기준으로 결과를 더 자연스럽게 다시 정리합니다.");
 
   try {
-    const payload = await requestJson(`/api/lessons/${state.selectedLesson.id}/regenerate`, {
+    const payload = await requestJson(`/api/regenerate?id=${encodeURIComponent(state.selectedLesson.id)}`, {
       method: "POST",
     });
     state.selectedLesson = normalizeLesson(payload.lesson);

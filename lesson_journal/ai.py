@@ -4,7 +4,6 @@ import json
 import mimetypes
 import re
 import uuid
-from pathlib import Path
 from typing import Any
 from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
@@ -23,13 +22,13 @@ def create_lesson_outputs(
     note: str,
     tone_samples: list[str],
     manual_transcript: str,
-    audio_paths: list[Path],
+    audio_inputs: list[dict[str, Any]],
 ) -> dict[str, Any]:
     transcript_text = manual_transcript.strip()
-    transcript_origin = "manual" if transcript_text else "audio"
+    transcript_origin = "manual_text" if transcript_text else "api_audio"
 
-    if not transcript_text and audio_paths:
-        transcript_text = transcribe_audio_files(audio_paths)
+    if not transcript_text and audio_inputs:
+        transcript_text = transcribe_audio_files(audio_inputs)
 
     if not transcript_text:
         raise AIProcessingError("전사문 또는 음성 파일이 필요합니다.")
@@ -132,26 +131,28 @@ def enrich_lesson_record(record: dict[str, Any]) -> dict[str, Any]:
     return lesson
 
 
-def transcribe_audio_files(audio_paths: list[Path]) -> str:
+def transcribe_audio_files(audio_inputs: list[dict[str, Any]]) -> str:
     transcripts: list[str] = []
-    total = len(audio_paths)
+    total = len(audio_inputs)
 
-    for index, audio_path in enumerate(audio_paths, start=1):
-        transcript = transcribe_audio(audio_path)
+    for index, audio_input in enumerate(audio_inputs, start=1):
+        transcript = transcribe_audio(audio_input)
+        file_name = audio_input.get("filename") or f"audio-{index}"
         if total == 1:
             transcripts.append(transcript)
         else:
-            transcripts.append(f"[음성 {index}: {audio_path.name}]\n{transcript}")
+            transcripts.append(f"[음성 {index}: {file_name}]\n{transcript}")
 
     return "\n\n".join(part.strip() for part in transcripts if part.strip()).strip()
 
 
-def transcribe_audio(audio_path: Path) -> str:
+def transcribe_audio(audio_input: dict[str, Any]) -> str:
     if not OPENAI_API_KEY:
         raise AIProcessingError("음성 자동 전사를 사용하려면 OPENAI_API_KEY가 필요합니다.")
 
-    mime_type = mimetypes.guess_type(audio_path.name)[0] or "application/octet-stream"
-    file_bytes = audio_path.read_bytes()
+    file_name = audio_input.get("filename") or f"audio-{uuid.uuid4().hex}.bin"
+    mime_type = audio_input.get("content_type") or mimetypes.guess_type(file_name)[0] or "application/octet-stream"
+    file_bytes = audio_input.get("content") or b""
     content_type, body = build_multipart_form(
         fields={
             "model": OPENAI_TRANSCRIBE_MODEL,
@@ -161,7 +162,7 @@ def transcribe_audio(audio_path: Path) -> str:
         files=[
             {
                 "field_name": "file",
-                "filename": audio_path.name,
+                "filename": file_name,
                 "content_type": mime_type,
                 "content": file_bytes,
             }

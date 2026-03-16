@@ -2,7 +2,7 @@
 cd /d "%~dp0"
 
 set REPO_URL=
-for /f "tokens=2" %%a in ('git remote get-url origin 2^>nul') do set REPO_URL=%%a
+for /f "delims=" %%a in ('git remote get-url origin 2^>nul') do set REPO_URL=%%a
 
 if not defined REPO_URL (
   echo Enter your GitHub repository URL.

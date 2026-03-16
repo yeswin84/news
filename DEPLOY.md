@@ -1,35 +1,30 @@
-# Deploy Guide
+# Vercel Deploy Guide
 
-이 앱은 로컬 파일에 기록을 저장하므로, 퍼블리시할 때는 `지속 저장소(volume/disk)`가 있는 플랫폼을 권장합니다.
+이 프로젝트는 Vercel 배포 기준으로 맞춰져 있습니다.
 
-## 추천 방식
+## 필요한 환경변수
 
-### 1. 가장 쉬운 방법: Railway
+- `OPENAI_API_KEY`
+- `BLOB_READ_WRITE_TOKEN`
+- `LESSON_JOURNAL_BASIC_AUTH_USER`
+- `LESSON_JOURNAL_BASIC_AUTH_PASSWORD`
 
-- 이 프로젝트에는 `Dockerfile`이 있어서 Railway가 바로 배포할 수 있습니다.
-- 음성 기록과 `lessons.json`을 유지하려면 Volume을 붙여야 합니다.
+## 배포 순서
 
-권장 설정:
+1. GitHub에 이 저장소를 올립니다.
+2. Vercel에서 저장소를 Import 합니다.
+3. 위 환경변수 4개를 Vercel Project Settings에 넣습니다.
+4. Deploy 합니다.
 
-- `OPENAI_API_KEY`: 실제 OpenAI 키
-- `LESSON_JOURNAL_DATA_DIR=/data`
-- `LESSON_JOURNAL_BASIC_AUTH_USER=원하는아이디`
-- `LESSON_JOURNAL_BASIC_AUTH_PASSWORD=원하는비밀번호`
+## 중요한 점
 
-Volume mount path:
+- 기록 데이터와 원본 음성 보관은 `Vercel Blob`에 저장됩니다.
+- 앱 첫 화면은 `vercel.json`에서 `/static/index.html`로 연결됩니다.
+- API는 `/api/config`, `/api/lessons`, `/api/lesson?id=...`, `/api/regenerate?id=...` 구조를 사용합니다.
 
-- `/data`
+## 업로드 제한
 
-## 배포 전 체크
+Vercel Functions 요청 크기 제한 때문에 큰 음성 파일은 업로드가 어려울 수 있습니다.
 
-- 외부 공개 전에는 반드시 Basic Auth를 설정하는 것을 권장합니다.
-- 원본 음성을 오래 보관하지 않으려면 앱에서 `원본 음성 보관`을 기본적으로 끄고 사용하세요.
-- 중요한 기록은 별도 백업을 권장합니다.
-
-## 현재 앱이 배포용으로 맞춰진 부분
-
-- `PORT` 환경변수를 자동 인식합니다.
-- `0.0.0.0` 바인딩을 지원합니다.
-- `/healthz` 경로를 제공합니다.
-- 저장 위치를 `LESSON_JOURNAL_DATA_DIR`로 바꿀 수 있습니다.
-- `LESSON_JOURNAL_BASIC_AUTH_USER/PASSWORD`로 전체 앱 보호가 가능합니다.
+- 짧은 수업 음성이나 압축된 mp3 사용을 권장합니다.
+- 긴 녹음은 나눠서 올리거나 전사문 직접 입력을 함께 고려하세요.
