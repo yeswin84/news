@@ -1,0 +1,1 @@
+"""Lesson journal application package."""
