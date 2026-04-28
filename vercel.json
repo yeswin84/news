@@ -2,12 +2,24 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "rewrites": [
     {
+      "source": "/admin",
+      "destination": "/static/admin.html"
+    },
+    {
+      "source": "/s/(.*)",
+      "destination": "/static/index.html"
+    },
+    {
       "source": "/",
       "destination": "/static/index.html"
     }
   ],
   "functions": {
-    "api/*.py": {
+    "api/**/*.py": {
+      "maxDuration": 300,
+      "excludeFiles": "{.env,data/**,__pycache__/**,Dockerfile,.dockerignore,start_lesson_journal.bat,publish_to_github.bat}"
+    },
+    "api/**/*.mjs": {
       "maxDuration": 60,
       "excludeFiles": "{.env,data/**,__pycache__/**,Dockerfile,.dockerignore,start_lesson_journal.bat,publish_to_github.bat}"
     }

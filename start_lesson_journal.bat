@@ -23,10 +23,15 @@ if not exist ".env" (
   )
 )
 
+if "%LESSON_JOURNAL_HOST%"=="" (
+  set LESSON_JOURNAL_HOST=0.0.0.0
+)
+
 start "" powershell -NoProfile -WindowStyle Hidden -Command "Start-Sleep -Seconds 2; Start-Process 'http://127.0.0.1:8000'"
 
 echo Starting Lesson Journal App...
 echo If the browser opens but the page is blank, wait 2-3 seconds and refresh once.
+echo This server is also opened for devices on the same Wi-Fi.
 echo.
 python run.py
 

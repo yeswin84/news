@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>선생님 대시보드</title>
+    <link rel="stylesheet" href="/static/styles.css" />
+  </head>
+  <body>
+    <div class="backdrop"></div>
+    <main class="shell">
+      <section class="hero">
+        <div class="hero-card admin-hero">
+          <div class="hero-copy-block">
+            <p class="eyebrow">Teacher Dashboard</p>
+            <p class="hero-subhead">학생 링크 · 제출 현황 · 기록 확인</p>
+            <h1>선생님용 화면</h1>
+            <p class="hero-copy">
+              학생별 전용 링크를 만들고, 누가 기록을 남겼는지 한 화면에서 확인할 수 있어요.
+            </p>
+          </div>
+
+          <div class="admin-summary-grid" id="admin-summary-grid">
+            <article class="admin-summary-card">
+              <span>전체 학생</span>
+              <strong id="summary-student-count">0</strong>
+            </article>
+            <article class="admin-summary-card">
+              <span>오늘 제출</span>
+              <strong id="summary-submitted-today">0</strong>
+            </article>
+            <article class="admin-summary-card">
+              <span>확인 필요</span>
+              <strong id="summary-needs-attention">0</strong>
+            </article>
+            <article class="admin-summary-card">
+              <span>아직 시작 전</span>
+              <strong id="summary-not-started">0</strong>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="grid admin-grid">
+        <div class="panel admin-panel">
+          <div class="panel-head">
+            <h2>학생 링크 만들기</h2>
+            <p>학생 이름만 입력하면 전용 링크를 만들고 바로 복사할 수 있어요.</p>
+          </div>
+
+          <form id="add-student-form" class="admin-create-form">
+            <label>
+              <span>학생 이름</span>
+              <input
+                id="student-name-input"
+                type="text"
+                placeholder="예: 민지, 지우, Daniel"
+                autocomplete="off"
+              />
+            </label>
+            <button type="submit" class="primary">학생 링크 만들기</button>
+            <p class="inline-help" id="add-student-help">
+              링크는 `/s/...` 형식으로 생성되고, 그 학생 기록만 그 링크에 쌓입니다.
+            </p>
+          </form>
+
+          <div class="panel-head row-between admin-student-list-head">
+            <div>
+              <h2>학생 목록</h2>
+              <p>학생별 최근 제출 상태와 학생 링크를 확인할 수 있어요.</p>
+            </div>
+            <input
+              type="search"
+              id="admin-search-input"
+              class="search"
+              placeholder="학생 이름이나 상태 검색"
+            />
+          </div>
+
+          <div id="admin-student-list" class="admin-student-list empty">아직 등록된 학생이 없습니다.</div>
+        </div>
+
+        <section class="panel admin-detail-panel">
+          <div class="panel-head row-between">
+            <div>
+              <h2 id="admin-detail-title">학생을 선택해주세요</h2>
+              <p id="admin-detail-subtitle">선택한 학생의 최근 제출 기록과 학생 링크를 여기서 확인할 수 있어요.</p>
+            </div>
+            <div class="detail-actions">
+              <button id="admin-open-link-btn" class="ghost" disabled>학생 링크 열기</button>
+              <button id="admin-copy-link-btn" class="primary" disabled>학생 링크 복사</button>
+            </div>
+          </div>
+
+          <div id="admin-detail-content">
+            <div class="empty-detail">왼쪽 목록에서 학생을 선택하면 최근 제출 기록이 표시됩니다.</div>
+          </div>
+        </section>
+      </section>
+    </main>
+
+    <script src="/static/admin.js"></script>
+  </body>
+</html>

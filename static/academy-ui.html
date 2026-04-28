@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Prime Academy 운영 보드</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;800&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/static/academy-ui.css" />
+  </head>
+  <body>
+    <div class="academy-app">
+      <main class="academy-main">
+        <header class="academy-topbar">
+          <div class="topbar-copy">
+            <p class="topbar-kicker" id="product-label">Teacher Workboard</p>
+            <h1 id="academy-brand-name">Prime Academy 운영 보드</h1>
+            <p class="topbar-description">
+              수업이 끝나면 학생을 선택하고 메모를 남기세요. 테스트 분석과 학부모 결과지까지 같은 흐름으로 이어집니다.
+            </p>
+          </div>
+
+          <div class="topbar-side">
+            <div class="topbar-meta-card">
+              <p class="topbar-kicker" id="topbar-date">2026년 4월 4일 토요일</p>
+              <strong id="topbar-title">김소연 선생님 운영 화면</strong>
+              <span>모바일에서도 바로 입력할 수 있게 구성했습니다.</span>
+            </div>
+
+            <div class="topbar-actions">
+              <button class="ghost-button" type="button">오늘 수업 묶음</button>
+              <button class="primary-button" id="topbar-pdf-button" type="button">선택 학생 PDF</button>
+            </div>
+          </div>
+        </header>
+
+        <section class="session-strip panel-card">
+          <div class="session-strip-head">
+            <div>
+              <p class="eyebrow">오늘 타임라인</p>
+              <h2>지금 처리해야 할 반과 수업 흐름</h2>
+            </div>
+            <div class="session-guide">
+              <span>1. 학생 선택</span>
+              <span>2. 수업 메모 저장</span>
+              <span>3. 결과지 생성</span>
+            </div>
+          </div>
+
+          <div class="schedule-list schedule-strip-list" id="schedule-list"></div>
+        </section>
+
+        <section class="metrics-grid" id="metrics-grid"></section>
+
+        <section class="workspace-shell">
+          <div class="workspace-head">
+            <div>
+              <p class="eyebrow">작업 전환</p>
+              <h2>선생님 업무 흐름</h2>
+            </div>
+
+            <div class="workspace-tabs" aria-label="작업 화면 전환">
+              <button class="workspace-tab active" type="button" data-view="lessons">수업 기록</button>
+              <button class="workspace-tab" type="button" data-view="tests">테스트 분석</button>
+              <button class="workspace-tab" type="button" data-view="reports">학부모 결과지</button>
+              <button class="workspace-tab" type="button" data-view="students">학생 상세</button>
+            </div>
+          </div>
+
+          <section class="view-panel active" data-panel="lessons">
+            <div class="lesson-layout">
+              <aside class="queue-column">
+                <article class="panel-card">
+                  <div class="panel-head">
+                    <div>
+                      <p class="eyebrow">Student Queue</p>
+                      <h3>학생 선택</h3>
+                    </div>
+                    <span class="panel-badge" id="roster-badge">24명 중 17명 완료</span>
+                  </div>
+
+                  <p class="panel-helper">
+                    수업이 끝난 학생부터 눌러서 기록하세요. 저장 후 `다음 학생`으로 바로 넘어갈 수 있습니다.
+                  </p>
+
+                  <div class="roster-list" id="student-roster"></div>
+                </article>
+              </aside>
+
+              <section class="entry-column">
+                <article class="panel-card student-focus-card">
+                  <div class="panel-head">
+                    <div>
+                      <p class="eyebrow">Current Student</p>
+                      <h3 id="composer-student-name">윤서 | 중2 A반</h3>
+                    </div>
+                    <span class="panel-badge" id="student-status-badge">기록 완료</span>
+                  </div>
+
+                  <p class="editor-copy" id="composer-student-copy">
+                    수업 직후 선생님이 가장 편하게 적을 수 있도록 자연어 중심으로 입력하게 만들었습니다.
+                  </p>
+                </article>
+
+                <article class="panel-card lesson-form-card">
+                  <label class="field-label" for="lesson-note-input">오늘 수업 메모</label>
+                  <textarea
+                    id="lesson-note-input"
+                    class="main-textarea"
+                    rows="10"
+                    placeholder="예: 개념은 이해했지만 기울기 부호가 바뀌는 문제에서 헷갈려함. 숙제는 80% 완료했고 다음 시간에는 짧은 유형 반복이 필요함."
+                  ></textarea>
+
+                  <div class="form-section-head">
+                    <strong>빠른 태그</strong>
+                    <span>자주 쓰는 표현만 바로 눌러주세요.</span>
+                  </div>
+                  <div class="tag-row" id="lesson-tag-row" aria-label="빠른 태그">
+                    <button class="chip-button active" type="button">숙제 완료</button>
+                    <button class="chip-button" type="button">집중도 좋음</button>
+                    <button class="chip-button active" type="button">개념 이해 보통 이상</button>
+                    <button class="chip-button" type="button">계산 실수 주의</button>
+                  </div>
+
+                  <div class="info-grid">
+                    <div class="info-mini-card">
+                      <span>숙제</span>
+                      <label class="mini-field-label" for="input-homework">간단 입력</label>
+                      <input id="input-homework" class="mini-input" type="text" placeholder="예: 80% 완료" />
+                    </div>
+                    <div class="info-mini-card">
+                      <span>수업 성취도</span>
+                      <label class="mini-field-label" for="input-achievement">간단 입력</label>
+                      <input id="input-achievement" class="mini-input" type="text" placeholder="예: 개념 이해 안정적" />
+                    </div>
+                    <div class="info-mini-card">
+                      <span>어려워한 부분</span>
+                      <label class="mini-field-label" for="input-difficulty">간단 입력</label>
+                      <input id="input-difficulty" class="mini-input" type="text" placeholder="예: 기울기 부호 판별" />
+                    </div>
+                    <div class="info-mini-card">
+                      <span>다음 시간 포인트</span>
+                      <label class="mini-field-label" for="input-next-step">간단 입력</label>
+                      <input id="input-next-step" class="mini-input" type="text" placeholder="예: 문장제 해석 속도 보완" />
+                    </div>
+                  </div>
+
+                  <div class="action-bar">
+                    <p class="save-status" id="lesson-save-status">아직 저장하지 않았습니다.</p>
+
+                    <div class="button-row">
+                      <button class="ghost-button" id="lesson-save-button" type="button">저장</button>
+                      <button class="primary-button" id="lesson-next-button" type="button">다음 학생</button>
+                    </div>
+                  </div>
+                </article>
+              </section>
+
+              <aside class="insight-column">
+                <article class="panel-card">
+                  <div class="panel-head">
+                    <div>
+                      <p class="eyebrow">Auto Summary</p>
+                      <h3>자동 정리 결과</h3>
+                    </div>
+                  </div>
+
+                  <div class="structured-list">
+                    <div class="structured-item">
+                      <span>수업 성취도</span>
+                      <strong id="ai-achievement">개념 이해 안정적</strong>
+                    </div>
+                    <div class="structured-item">
+                      <span>숙제 완료 여부</span>
+                      <strong id="ai-homework">80% 완료</strong>
+                    </div>
+                    <div class="structured-item">
+                      <span>어려워한 부분</span>
+                      <strong id="ai-difficulty">기울기 부호 판별</strong>
+                    </div>
+                    <div class="structured-item">
+                      <span>다음 시간 포인트</span>
+                      <strong id="ai-next-step">문제 해석 속도 보완</strong>
+                    </div>
+                  </div>
+                </article>
+
+                <article class="panel-card">
+                  <div class="panel-head">
+                    <div>
+                      <p class="eyebrow">Parent Message</p>
+                      <h3>학부모 전달 미리보기</h3>
+                    </div>
+                  </div>
+
+                  <div class="message-card">
+                    <p id="parent-message">
+                      오늘은 일차함수 그래프 해석 단원을 진행했습니다. 윤서는 개념 흐름은 잘 따라왔고 계산도 안정적이었지만,
+                      기울기 부호를 해석하는 구간에서 조금 헷갈려하는 모습이 있었습니다. 다음 시간에는 문제 해석 속도와 부호 판단을 함께 보완하겠습니다.
+                    </p>
+                  </div>
+                </article>
+
+                <article class="panel-card">
+                  <div class="panel-head">
+                    <div>
+                      <p class="eyebrow">Auto Outputs</p>
+                      <h3>이 메모로 생성되는 결과물</h3>
+                    </div>
+                  </div>
+
+                  <div class="output-stack" id="output-stack"></div>
+                </article>
+
+                <article class="panel-card">
+                  <div class="panel-head">
+                    <div>
+                      <p class="eyebrow">Teacher Check</p>
+                      <h3>지금 확인할 포인트</h3>
+                    </div>
+                  </div>
+
+                  <div class="note-list" id="note-list"></div>
+                </article>
+              </aside>
+            </div>
+          </section>
+
+          <section class="view-panel" data-panel="tests">
+            <div class="test-layout">
+              <article class="panel-card">
+                <div class="panel-head">
+                  <div>
+                    <p class="eyebrow">Unit Overview</p>
+                    <h3 id="test-unit-name">일차함수 단원 테스트</h3>
+                  </div>
+                  <span class="panel-badge" id="test-average-badge">평균 84점</span>
+                </div>
+
+                <div class="score-summary-grid">
+                  <div class="score-box">
+                    <span>평균</span>
+                    <strong id="test-average-value">84</strong>
+                  </div>
+                  <div class="score-box">
+                    <span>최고</span>
+                    <strong id="test-top-score-value">97</strong>
+                  </div>
+                  <div class="score-box">
+                    <span>재시험 필요</span>
+                    <strong id="test-retest-count-value">2명</strong>
+                  </div>
+                </div>
+
+                <div class="score-table" id="score-table">
+                  <div class="score-row active">
+                    <span>윤서</span>
+                    <strong id="test-score">86점</strong>
+                    <em id="test-trend">전회 대비 +12</em>
+                  </div>
+                </div>
+              </article>
+
+              <article class="panel-card">
+                <div class="panel-head">
+                  <div>
+                    <p class="eyebrow">Weak Concepts</p>
+                    <h3>반 전체에서 자주 막히는 개념</h3>
+                  </div>
+                </div>
+
+                <div class="concept-bars" id="concept-bars"></div>
+              </article>
+
+              <article class="panel-card test-editor-card">
+                <div class="panel-head">
+                  <div>
+                    <p class="eyebrow">Selected Student</p>
+                    <h3 id="test-student-name">윤서 분석</h3>
+                  </div>
+                </div>
+
+                <div class="analysis-points">
+                  <div class="analysis-point">
+                    <span>강점</span>
+                    <p id="test-strength">계산 안정감이 있고 기본 개념 흐름은 정확하게 이해하고 있습니다.</p>
+                  </div>
+                  <div class="analysis-point">
+                    <span>보완 필요</span>
+                    <p id="test-weakness">기울기 부호를 그래프 방향과 연결하는 과정에서 판단이 흔들렸습니다.</p>
+                  </div>
+                  <div class="analysis-point">
+                    <span>다음 수업 계획</span>
+                    <p id="test-plan">짧은 유형 반복과 문장제 해석 훈련을 함께 배치하는 것이 좋습니다.</p>
+                  </div>
+                </div>
+
+                <div class="test-form-grid">
+                  <div>
+                    <label class="field-label" for="test-score-input">점수</label>
+                    <input id="test-score-input" class="mini-input" type="number" min="0" max="100" />
+                  </div>
+                  <div>
+                    <label class="field-label" for="test-trend-input">점수 추이</label>
+                    <input id="test-trend-input" class="mini-input" type="text" />
+                  </div>
+                </div>
+
+                <label class="field-label" for="test-concepts-input">약한 개념</label>
+                <input id="test-concepts-input" class="mini-input" type="text" placeholder="쉼표로 구분해서 입력" />
+
+                <label class="field-label" for="test-strength-input">강점 분석</label>
+                <textarea id="test-strength-input" class="side-textarea" rows="3"></textarea>
+
+                <label class="field-label" for="test-weakness-input">보완 필요</label>
+                <textarea id="test-weakness-input" class="side-textarea" rows="3"></textarea>
+
+                <label class="field-label" for="test-plan-input">다음 수업 계획</label>
+                <textarea id="test-plan-input" class="side-textarea" rows="3"></textarea>
+
+                <div class="action-bar">
+                  <p class="save-status" id="test-save-status">테스트 분석을 아직 저장하지 않았습니다.</p>
+                  <div class="button-row">
+                    <button class="primary-button" id="test-save-button" type="button">테스트 분석 저장</button>
+                  </div>
+                </div>
+              </article>
+            </div>
+          </section>
+
+          <section class="view-panel" data-panel="reports">
+            <div class="report-layout">
+              <article class="report-paper">
+                <div class="report-paper-head">
+                  <div>
+                    <p class="eyebrow">Preview</p>
+                    <h3 id="report-student-title">윤서 학부모 결과지</h3>
+                  </div>
+                  <span class="panel-badge">중2 A반 · 4월 1주</span>
+                </div>
+
+                <div class="report-hero-card">
+                  <strong id="report-summary">
+                    이번 단원에서는 개념 이해가 안정적으로 자리 잡고 있으며, 그래프 해석 속도와 부호 판별 정확도를 보완하면 더 빠르게 성장할 수 있는 상태입니다.
+                  </strong>
+                </div>
+
+                <div class="report-card-grid">
+                  <section class="report-card">
+                    <span>수업 태도</span>
+                    <p id="report-attitude">집중도는 전반적으로 좋았고 설명을 끝까지 듣고 정리하려는 태도가 안정적이었습니다.</p>
+                  </section>
+                  <section class="report-card">
+                    <span>성취 내용</span>
+                    <p id="report-achievement">그래프와 식의 기본 연결은 잘 수행했고 계산 실수는 많지 않았습니다.</p>
+                  </section>
+                  <section class="report-card">
+                    <span>숙제 수행</span>
+                    <p id="report-homework">숙제는 80% 정도 수행했으며 풀이 흔적도 비교적 성실하게 남겼습니다.</p>
+                  </section>
+                  <section class="report-card">
+                    <span>어려워한 부분</span>
+                    <p id="report-difficulty">기울기 부호가 바뀌는 경우를 그래프 방향과 연결해서 이해하는 부분이 아직 불안정합니다.</p>
+                  </section>
+                  <section class="report-card">
+                    <span>테스트 분석</span>
+                    <p id="report-test">86점으로 이전 대비 상승했습니다. 기본 문항은 안정적이지만 문장제에서 시간이 길어졌습니다.</p>
+                  </section>
+                  <section class="report-card">
+                    <span>다음 수업 계획</span>
+                    <p id="report-next">다음 시간에는 짧은 그래프 판별 문제와 문장제 해석 훈련을 함께 진행할 예정입니다.</p>
+                  </section>
+                </div>
+              </article>
+
+              <article class="panel-card report-actions-card">
+                <div class="panel-head">
+                  <div>
+                    <p class="eyebrow">Edit & Deliver</p>
+                    <h3>결과지 편집과 발송 준비</h3>
+                  </div>
+                </div>
+
+                <div class="delivery-list">
+                  <div class="delivery-item">
+                    <strong>1. 초안 생성</strong>
+                    <p>수업 메모와 테스트 기록을 합쳐 기본 문구를 만듭니다.</p>
+                  </div>
+                  <div class="delivery-item">
+                    <strong>2. 문구 수정</strong>
+                    <p>학부모 톤에 맞게 필요한 부분만 다듬고 저장합니다.</p>
+                  </div>
+                  <div class="delivery-item">
+                    <strong>3. PDF 또는 메시지 전달</strong>
+                    <p>다운로드와 복사를 바로 이어서 진행할 수 있습니다.</p>
+                  </div>
+                </div>
+
+                <div class="report-editor-grid">
+                  <div>
+                    <label class="field-label" for="report-summary-input">결과지 요약</label>
+                    <textarea id="report-summary-input" class="side-textarea" rows="4"></textarea>
+                  </div>
+
+                  <div>
+                    <label class="field-label" for="report-attitude-input">수업 태도</label>
+                    <textarea id="report-attitude-input" class="side-textarea" rows="3"></textarea>
+                  </div>
+
+                  <div>
+                    <label class="field-label" for="report-achievement-input">성취 내용</label>
+                    <textarea id="report-achievement-input" class="side-textarea" rows="3"></textarea>
+                  </div>
+
+                  <div>
+                    <label class="field-label" for="report-homework-input">숙제 수행</label>
+                    <textarea id="report-homework-input" class="side-textarea" rows="3"></textarea>
+                  </div>
+
+                  <div>
+                    <label class="field-label" for="report-difficulty-input">어려웠던 부분</label>
+                    <textarea id="report-difficulty-input" class="side-textarea" rows="3"></textarea>
+                  </div>
+
+                  <div>
+                    <label class="field-label" for="report-test-input">테스트 분석</label>
+                    <textarea id="report-test-input" class="side-textarea" rows="3"></textarea>
+                  </div>
+
+                  <div>
+                    <label class="field-label" for="report-next-input">다음 수업 계획</label>
+                    <textarea id="report-next-input" class="side-textarea" rows="3"></textarea>
+                  </div>
+                </div>
+
+                <label class="field-label" for="message-draft">학부모 메시지 초안</label>
+                <textarea id="message-draft" class="side-textarea" rows="7"></textarea>
+
+                <div class="action-bar report-action-bar">
+                  <p class="save-status" id="report-save-status">결과지 초안을 아직 생성하지 않았습니다.</p>
+
+                  <div class="button-column">
+                    <button class="primary-button" id="report-generate-button" type="button">초안 생성</button>
+                    <button class="ghost-button" id="report-save-button" type="button">결과지 저장</button>
+                    <button class="ghost-button" id="report-pdf-button" type="button">PDF 다운로드</button>
+                    <button class="ghost-button" id="message-copy-button" type="button">메시지 복사</button>
+                  </div>
+                </div>
+              </article>
+            </div>
+          </section>
+
+          <section class="view-panel" data-panel="students">
+            <div class="student-layout">
+              <article class="panel-card">
+                <div class="panel-head">
+                  <div>
+                    <p class="eyebrow">Profile</p>
+                    <h3 id="profile-name">윤서 학습 프로필</h3>
+                  </div>
+                </div>
+
+                <div class="profile-top">
+                  <div class="profile-score">
+                    <span>현재 흐름</span>
+                    <strong id="profile-score">안정적 상승</strong>
+                  </div>
+                  <div class="profile-tags" id="profile-tags"></div>
+                </div>
+
+                <div class="profile-summary">
+                  <p id="profile-summary">
+                    계산 안정감이 좋고 설명을 들은 뒤 정리하는 태도가 차분합니다. 다만 문장제 해석 속도는 조금 더 끌어올릴 필요가 있습니다.
+                  </p>
+                </div>
+              </article>
+
+              <article class="panel-card">
+                <div class="panel-head">
+                  <div>
+                    <p class="eyebrow">Lesson Timeline</p>
+                    <h3>최근 수업 흐름</h3>
+                  </div>
+                </div>
+
+                <div class="timeline-list" id="timeline-list"></div>
+              </article>
+
+              <article class="panel-card">
+                <div class="panel-head">
+                  <div>
+                    <p class="eyebrow">Parent Communication</p>
+                    <h3>학부모 전달 이력</h3>
+                  </div>
+                </div>
+
+                <div class="communication-list" id="communication-list"></div>
+              </article>
+            </div>
+          </section>
+        </section>
+      </main>
+    </div>
+
+    <nav class="mobile-dock" aria-label="모바일 주요 탭">
+      <button class="mobile-dock-button active" type="button" data-view="lessons">수업</button>
+      <button class="mobile-dock-button" type="button" data-view="tests">테스트</button>
+      <button class="mobile-dock-button" type="button" data-view="reports">결과지</button>
+      <button class="mobile-dock-button" type="button" data-view="students">학생</button>
+    </nav>
+
+    <script src="/static/academy-ui.js"></script>
+  </body>
+</html>

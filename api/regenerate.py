@@ -1,1 +1,5 @@
-from lesson_journal.app import LessonJournalHandler as handler
+from lesson_journal.app import LessonJournalHandler
+
+
+class handler(LessonJournalHandler):
+    pass
