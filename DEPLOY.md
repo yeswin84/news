@@ -13,6 +13,22 @@
 
 ## 배포 순서
 
+### 반복 운영용: GitHub + Vercel 한 번에 반영
+
+평소 수정 후에는 `publish_reading_note.bat`를 실행합니다.
+
+이 스크립트는 다음 순서로 처리합니다.
+
+1. GitHub 원격 저장소가 없으면 저장소 URL을 입력받습니다.
+2. 변경된 파일을 `git add .`로 스테이징합니다.
+3. 커밋 메시지를 입력받고 커밋합니다.
+4. `main` 브랜치를 GitHub에 푸시합니다.
+5. `npx vercel --prod --yes`로 Vercel 프로덕션에 배포합니다.
+
+처음 한 번은 GitHub에서 빈 저장소를 만든 뒤 URL을 붙여넣어야 합니다.
+
+개인 데이터와 임시 파일은 `.gitignore`와 `.vercelignore`에서 제외합니다.
+
 ### 가장 빠른 방법: CLI로 바로 배포
 
 1. 이 폴더에서 `npx vercel login` 으로 로그인합니다.
