@@ -405,9 +405,16 @@ body {
 
 .grid {
   display: grid;
-  grid-template-columns: minmax(360px, 430px) 1fr;
+  grid-template-columns: minmax(360px, 440px) minmax(0, 1fr);
   gap: 20px;
   margin-bottom: 20px;
+  align-items: start;
+}
+
+.left-stack {
+  display: grid;
+  gap: 20px;
+  align-self: start;
 }
 
 .panel {
@@ -786,6 +793,9 @@ button:disabled {
 
 .detail-panel {
   min-height: 480px;
+  align-self: start;
+  position: sticky;
+  top: 20px;
 }
 
 .detail-actions .ghost,
@@ -1586,6 +1596,10 @@ button:disabled {
 
   .admin-grid {
     grid-template-columns: 1fr;
+  }
+
+  .detail-panel {
+    position: static;
   }
 }
 

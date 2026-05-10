@@ -36,120 +36,122 @@
         </div>
       </section>
 
-      <section class="grid">
-        <div class="panel create-panel">
-          <div class="panel-head">
-            <h2 id="create-panel-title">새 기록 만들기</h2>
-            <p id="create-panel-copy">음성 파일을 올리고, 기사 원문을 함께 넣으면 더 정확한 기록으로 정리합니다.</p>
-          </div>
-
-          <form id="create-form">
-            <div class="upload-actions">
-              <button type="button" class="upload-choice upload-choice-primary" id="pick-files-btn">파일에서 선택</button>
-              <button type="button" class="upload-choice" id="record-audio-btn">바로 녹음</button>
-              <button type="button" class="upload-choice" id="text-input-btn">텍스트 입력</button>
+      <section class="grid workspace-grid">
+        <div class="left-stack">
+          <div class="panel create-panel">
+            <div class="panel-head">
+              <h2 id="create-panel-title">새 기록 만들기</h2>
+              <p id="create-panel-copy">음성 파일을 올리고, 기사 원문을 함께 넣으면 더 정확한 기록으로 정리합니다.</p>
             </div>
 
-            <p class="upload-mobile-help" id="upload-mobile-help">
-              음성 파일, 바로 녹음, 텍스트 입력 중 편한 방식으로 시작할 수 있어요.
-            </p>
+            <form id="create-form">
+              <div class="upload-actions">
+                <button type="button" class="upload-choice upload-choice-primary" id="pick-files-btn">파일에서 선택</button>
+                <button type="button" class="upload-choice" id="record-audio-btn">바로 녹음</button>
+                <button type="button" class="upload-choice" id="text-input-btn">텍스트 입력</button>
+              </div>
 
-            <div class="upload-guide">
-              <strong>음성 파일 안내</strong>
-              <p>전사까지 안정적으로 처리하려면 파일 1개당 25MB 이하가 좋아요. m4a 기준 약 30분 내외를 권장하고, 1시간 녹음은 30분씩 2개로 나누면 안전합니다.</p>
-              <p>앱에서 바로 녹음한 파일은 업로드 전에 <b>백업 저장</b>을 눌러 기기에 먼저 저장해두면 오류가 나도 음성이 사라지지 않아요.</p>
-            </div>
+              <p class="upload-mobile-help" id="upload-mobile-help">
+                음성 파일, 바로 녹음, 텍스트 입력 중 편한 방식으로 시작할 수 있어요.
+              </p>
 
-            <input type="hidden" name="lesson_date" id="lesson-date" />
-            <input
-              type="file"
-              id="audio-input"
-              accept=".m4a,.mp3,.wav,.aac,.ogg,.oga,.webm,.mpga,.mpeg,.flac"
-              multiple
-              class="hidden-file-input"
-            />
-            <input
-              type="file"
-              id="record-input"
-              accept="audio/*"
-              capture
-              class="hidden-file-input"
-            />
+              <div class="upload-guide">
+                <strong>음성 파일 안내</strong>
+                <p>전사까지 안정적으로 처리하려면 파일 1개당 25MB 이하가 좋아요. m4a 기준 약 30분 내외를 권장하고, 1시간 녹음은 30분씩 2개로 나누면 안전합니다.</p>
+                <p>앱에서 바로 녹음한 파일은 업로드 전에 <b>백업 저장</b>을 눌러 기기에 먼저 저장해두면 오류가 나도 음성이 사라지지 않아요.</p>
+              </div>
 
-            <div class="input-panel hidden-action" id="text-input-panel">
-              <label>
-                <span>텍스트로 입력</span>
-                <textarea
-                  name="article_text"
-                  id="article-text-input"
-                  rows="7"
-                  placeholder="기사 본문이나 읽고 나눈 생각을 붙여넣어 주세요."
-                ></textarea>
-              </label>
-            </div>
+              <input type="hidden" name="lesson_date" id="lesson-date" />
+              <input
+                type="file"
+                id="audio-input"
+                accept=".m4a,.mp3,.wav,.aac,.ogg,.oga,.webm,.mpga,.mpeg,.flac"
+                multiple
+                class="hidden-file-input"
+              />
+              <input
+                type="file"
+                id="record-input"
+                accept="audio/*"
+                capture
+                class="hidden-file-input"
+              />
 
-            <div class="optional-link">
-              <button type="button" class="link-toggle" id="url-toggle-btn">기사 URL 추가</button>
-              <div class="input-panel hidden-action" id="url-input-panel">
+              <div class="input-panel hidden-action" id="text-input-panel">
                 <label>
-                  <span>기사 URL</span>
-                  <input
-                    type="url"
-                    name="article_url"
-                    placeholder="기사 링크가 있으면 붙여넣어 주세요."
-                  />
+                  <span>텍스트로 입력</span>
+                  <textarea
+                    name="article_text"
+                    id="article-text-input"
+                    rows="7"
+                    placeholder="기사 본문이나 읽고 나눈 생각을 붙여넣어 주세요."
+                  ></textarea>
                 </label>
               </div>
-            </div>
 
-            <div class="selected-files" id="selected-files" hidden></div>
+              <div class="optional-link">
+                <button type="button" class="link-toggle" id="url-toggle-btn">기사 URL 추가</button>
+                <div class="input-panel hidden-action" id="url-input-panel">
+                  <label>
+                    <span>기사 URL</span>
+                    <input
+                      type="url"
+                      name="article_url"
+                      placeholder="기사 링크가 있으면 붙여넣어 주세요."
+                    />
+                  </label>
+                </div>
+              </div>
 
-            <div class="quick-actions">
-              <button type="submit" class="primary primary-large" id="create-submit-btn">기록 만들기</button>
-              <p class="inline-help" id="create-help">
-                URL은 선택 사항이고, 텍스트만으로도 기록을 만들 수 있어요.
-              </p>
+              <div class="selected-files" id="selected-files" hidden></div>
+
+              <div class="quick-actions">
+                <button type="submit" class="primary primary-large" id="create-submit-btn">기록 만들기</button>
+                <p class="inline-help" id="create-help">
+                  URL은 선택 사항이고, 텍스트만으로도 기록을 만들 수 있어요.
+                </p>
+              </div>
+            </form>
+          </div>
+
+          <div class="panel list-panel">
+            <div class="panel-head row-between">
+              <div>
+                <h2 id="list-panel-title">기록 목록</h2>
+                <p id="list-panel-copy">날짜별로 저장된 수업 기록을 다시 열어볼 수 있어요.</p>
+              </div>
+              <input
+                type="search"
+                id="search-input"
+                class="search"
+                placeholder="기사 제목이나 날짜 검색"
+              />
             </div>
-          </form>
+            <div id="lesson-list" class="lesson-list empty">아직 저장된 기록이 없습니다.</div>
+          </div>
         </div>
 
-        <div class="panel list-panel">
+        <section class="panel detail-panel">
           <div class="panel-head row-between">
             <div>
-              <h2 id="list-panel-title">기록 목록</h2>
-              <p id="list-panel-copy">날짜별로 저장된 수업 기록을 다시 열어볼 수 있어요.</p>
+              <h2 id="detail-title">기록을 선택해주세요</h2>
+              <p id="detail-subtitle">생성된 결과를 열어보고 PDF나 문서 파일로 저장할 수 있어요.</p>
             </div>
-            <input
-              type="search"
-              id="search-input"
-              class="search"
-              placeholder="기사 제목이나 날짜 검색"
-            />
+            <div class="detail-actions">
+              <button id="pdf-btn" class="ghost" disabled>PDF 저장</button>
+              <button id="doc-btn" class="primary" disabled>문서 저장</button>
+            </div>
           </div>
-          <div id="lesson-list" class="lesson-list empty">아직 저장된 기록이 없습니다.</div>
-        </div>
-      </section>
 
-      <section class="panel detail-panel">
-        <div class="panel-head row-between">
-          <div>
-            <h2 id="detail-title">기록을 선택해주세요</h2>
-            <p id="detail-subtitle">생성된 결과를 열어보고 PDF나 문서 파일로 저장할 수 있어요.</p>
+          <div class="tabs">
+            <button class="tab active" data-tab="report">리포트 보기</button>
+            <button class="tab" data-tab="copy">바로 복사</button>
           </div>
-          <div class="detail-actions">
-            <button id="pdf-btn" class="ghost" disabled>PDF 저장</button>
-            <button id="doc-btn" class="primary" disabled>문서 저장</button>
+
+          <div id="detail-content">
+            <div class="empty-detail">왼쪽 목록에서 기록을 선택하거나 새로 만들어주세요.</div>
           </div>
-        </div>
-
-        <div class="tabs">
-          <button class="tab active" data-tab="report">리포트 보기</button>
-          <button class="tab" data-tab="copy">바로 복사</button>
-        </div>
-
-        <div id="detail-content">
-          <div class="empty-detail">왼쪽 목록에서 기록을 선택하거나 새로 만들어주세요.</div>
-        </div>
+        </section>
       </section>
     </main>
 
